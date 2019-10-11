@@ -1,19 +1,19 @@
-# Install Privatebin on Raspberry Pi by treehouses image
+# Install Privatebin on Raspberry Pi via Treehouses image
 
 Oct 09, 2019 • [hiroTochigi](https://www.github.com/hiroTochigi)  
 
 ---
 
-This tutorial lets you install Privatebin on your Raspberry Pi by a treehouses image. The treehouses image already has Tor Hidden Service and Docker so you can easily configure Privatebin on your Raspberry Pi through your Onion Server with Docker. You can use Privatebin through your Tor Browser with your Onion address. You can learn a simple example of a way to use Docker and a configuration of the installed software on your Onion address.
+This tutorial lets you install Privatebin on your Raspberry Pi via a Treehouses image. The Treehouses image already has Tor Hidden Service and Docker so you can easily configure Privatebin on your Raspberry Pi through your Onion Server with Docker. You can use Privatebin through your Tor Browser with your Onion address. Also, you can learn a simple example of a way to use Docker and a configuration of the installed software on your Onion address.
 
 ### Prerequisite 
-* Raspberry Pi with treehouses
+* Raspberry Pi with Treehouses
 * Tor Browser
-* ssh connection to your Raspberry Pi
+* SSH connection to your Raspberry Pi
 
 ## Step 1 - Download Codes by Git
 
-Download a Docker file of Privatebin for Raspberry Pi and the latest Privatebin code
+Download a Docker file of Privatebin for Raspberry Pi and the latest Privatebin code.
 
 ```
 git clone https://github.com/uGeek/docker-privatebin
@@ -32,21 +32,24 @@ Type
 vim Dockerfile
 ```
 
-You get the below text
+You get the below text:
 
 ![](images/20191000-Dockerfile.png)
 
 This Dockerfile builds an image of Privatebin based on Apache server. However, it has a problem; In October/2019, the Privatebin of this Dockerfile does not support Tor Browser. Fortunately, the latest code supports Tor Browser. Therefore, you need to use the latest Privatebin code which you git-cloned.
 
 ### Add ADD Command
-Add one line between FROM command and RUN command
-ADD PrivateBin var/www/PrivateBin
+Add one line between FROM command and RUN command.
 
-This command adds the local PrivateBin directory in /var/www directory as the same name: PrivateBin
+```
+ADD PrivateBin var/www/PrivateBin
+```
+
+This command adds the local PrivateBin directory in /var/www/PrivateBin in Docker image.
 This Privatebin code is the latest so you can use it through Tor Browser.
 
 ### Delete Three Lines
-Delete the three lines
+Delete the three lines:
 
 1. curl -L https://github.com/PrivateBin/PrivateBin/archive/master.zip > /var/www/master.zip && \
 1. unzip -q master.zip && \
@@ -56,26 +59,26 @@ Delete the three lines
 curl -L https://github.com/PrivateBin/PrivateBin/archive/master.zip > /var/www/master.zip && \
 ```
 
-This code downloads a master.zip file from Privatebin archive repository and stores in /var/www directory as the same name: master.zip. However, the master.zip code is not the latest code. You do not want to use this image, so delete the line. 
+This code downloads a master.zip file from the Privatebin archive repository and stores in /var/www/master.zip in Docker image. However, the master.zip code is not the latest code. You do not want to use this image, so delete the line. 
 
 ```
 unzip -q master.zip && \
 rm -rf master.zip
 ```
 
-This two codes deal with zip file. The first code decompresses the master.zip. The second code deletes master.zip. However, you git-cloned the uncompressed Privatebin, so these codes are not only used anymore but also produce errors.    
+This two codes deal with zip file. The first code decompresses the master.zip. The second code deletes master.zip. However, you git-cloned the uncompressed Privatebin, so not only are these codes not used anymore, but they also produce errors.    
 
 ### Modify Three Lines
-Change three lines
+Change three lines:
 
-1. apt-get install -y unzip zlib1g-dev libpng-dev && \` → `apt-get install -y zlib1g-dev libpng-dev && \
-1. mv PrivateBin-master html && \`→ `mv PrivateBin html && \
-1. a2enmod rewrite && \`→ `a2enmod rewrite
+1. apt-get install -y unzip zlib1g-dev libpng-dev && \ → apt-get install -y zlib1g-dev libpng-dev && \
+1. mv PrivateBin-master html && \ → mv PrivateBin html && \
+1. a2enmod rewrite && \ → a2enmod rewrite
 
 The first modification is optional. You do not need to use upzip in this Dockerfile.
 The second and third modifications are crucial. 
-The second command changes from the first directory name to html. If there is not the first name, you get an error.
-The third command must be the last command in the first `RUN command. && \` means that there is a next command. If there is `&& \` but no command proceeds, you get an error.
+The second command changes the first directory name to html. If the name of the first directory is not PrivateBin, you get an error.
+The third command must be the last command in the first RUN command block. `&& \` tells Docker engine that there is a next command. If there is `&& \` but no command proceeds, you get an error.
 
 After that you should have the below Dockerfile.
 
@@ -83,7 +86,7 @@ After that you should have the below Dockerfile.
 
 ## Step 3 - Make Docker Image
 
-Type the below command
+Type the below command:
 
 ```
 docker build -t privatebin
