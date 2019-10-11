@@ -93,7 +93,7 @@ docker build -t privatebin
 ```
 
 The command docker `build .` builds Docker image from Dockerfile if there is a Dockerfile in the current directory. 
-`-t privatebin` means that put the name: privatebin on the built image
+In order to identify the image you just built easily, you should name your image. The flag`-t privatebin` means that you are naming your images as privatebin.
 You can see it from the below command.
 
 ```
